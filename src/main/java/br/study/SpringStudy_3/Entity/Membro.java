@@ -6,15 +6,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Membro {
+public class Membro  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +27,14 @@ public class Membro {
     private String nome;
     private String cpf;
 
+    private String email;
+    private String password;
+
     @OneToMany(mappedBy = "membro")
     @JsonIgnore
     private List<Emprestimo> emprestimos;
+
+
+
+
 }

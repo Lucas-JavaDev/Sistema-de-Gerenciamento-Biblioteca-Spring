@@ -1,4 +1,4 @@
-package br.study.SpringStudy_3.Service.DTO;
+package br.study.SpringStudy_3.DTO;
 
 
 import lombok.AllArgsConstructor;
@@ -8,8 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LivroCreateDTO {
+public class LivroRequestDTO {
     private String titulo;
-    private Long autorId;
+    private String nomeAutor;
     private Integer estoque;
+    private Long Id;
+
 }

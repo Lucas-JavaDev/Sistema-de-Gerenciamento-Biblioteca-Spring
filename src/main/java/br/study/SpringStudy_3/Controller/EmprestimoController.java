@@ -2,12 +2,11 @@ package br.study.SpringStudy_3.Controller;
 
 import br.study.SpringStudy_3.Entity.Emprestimo;
 import br.study.SpringStudy_3.Entity.Membro;
-import br.study.SpringStudy_3.Exception.MemberNotFoundException;
 import br.study.SpringStudy_3.Repository.EmpRepository;
 import br.study.SpringStudy_3.Repository.MembroRepository;
-import br.study.SpringStudy_3.Service.DTO.EmpCreateDTO;
-import br.study.SpringStudy_3.Service.DTO.EmpDTO;
-import br.study.SpringStudy_3.Service.DTO.EmpRequestDTO;
+import br.study.SpringStudy_3.DTO.EmpCreateDTO;
+import br.study.SpringStudy_3.DTO.EmpDTO;
+import br.study.SpringStudy_3.DTO.EmpRequestDTO;
 import br.study.SpringStudy_3.Service.EmprestimoService;
 import br.study.SpringStudy_3.Service.Enum.EmpStatus;
 import org.springframework.beans.factory.annotation.Autowired;

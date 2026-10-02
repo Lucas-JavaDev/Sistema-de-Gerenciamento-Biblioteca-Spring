@@ -3,7 +3,7 @@ package br.study.SpringStudy_3.Controller;
 import br.study.SpringStudy_3.Entity.Autor;
 import br.study.SpringStudy_3.Exception.AutorNotFoundException;
 import br.study.SpringStudy_3.Repository.AutorRepository;
-import br.study.SpringStudy_3.Service.DTO.AutorCreateDTO;
+import br.study.SpringStudy_3.DTO.AutorCreateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/autor")
 public class AutorController {
+
     @Autowired
     private AutorRepository autorRepository;
 

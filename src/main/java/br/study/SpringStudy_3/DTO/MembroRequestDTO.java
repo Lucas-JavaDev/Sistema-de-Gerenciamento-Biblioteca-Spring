@@ -1,4 +1,5 @@
-package br.study.SpringStudy_3.Service.DTO;
+package br.study.SpringStudy_3.DTO;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class MembroCreateDTO {
+public class MembroRequestDTO {
     private String nome;
-    private String cpf;
+    private Long id;
 }
