@@ -61,11 +61,11 @@ public class MembroService {
 
 
     public void delete(Long id) {
-        Membro membro = membroRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Membro não encontrado")
-        );
+        if(membroRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Membro não encontrado");
+        }
 
-        membroRepository.delete(membro);
+        membroRepository.deleteById(id);
     }
 
     // Setar valores
