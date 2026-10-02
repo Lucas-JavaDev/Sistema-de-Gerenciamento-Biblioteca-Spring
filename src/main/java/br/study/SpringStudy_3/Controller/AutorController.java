@@ -30,7 +30,7 @@ public class AutorController {
         return ResponseEntity.ok(autorService.findById(id));
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<AutorDTO> createAuthor(@RequestBody AutorDTO autorCreateDTO){
         AutorDTO dto = autorService.create(autorCreateDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()

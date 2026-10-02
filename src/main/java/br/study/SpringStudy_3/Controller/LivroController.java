@@ -1,111 +1,56 @@
 package br.study.SpringStudy_3.Controller;
 
-
-import br.study.SpringStudy_3.Entity.Autor;
-import br.study.SpringStudy_3.Entity.Livro;
-import br.study.SpringStudy_3.Exception.AutorNotFoundException;
+import br.study.SpringStudy_3.DTO.LivroDTO;
 import br.study.SpringStudy_3.Exception.BookAlreadyBorrowed;
 import br.study.SpringStudy_3.Exception.BookNotFoundException;
-import br.study.SpringStudy_3.Repository.AutorRepository;
 import br.study.SpringStudy_3.Repository.LivroRepository;
-import br.study.SpringStudy_3.DTO.LivroCreateDTO;
-import br.study.SpringStudy_3.DTO.LivroRequestDTO;
 import br.study.SpringStudy_3.Service.EmprestimoService;
+import br.study.SpringStudy_3.Service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/livro")
 public class LivroController {
 
-    @Autowired
-    private LivroRepository livroRepository;
-    @Autowired
-    private EmprestimoService emprestimoService;
-    @Autowired
-    private AutorRepository autorRepository;
+    private final LivroService livroService;
+    private final EmprestimoService emprestimoService;
 
+    public LivroController(LivroService livroService, EmprestimoService emprestimoService) {
+        this.livroService = livroService;
+        this.emprestimoService = emprestimoService;
+    }
 
     @GetMapping
-    public List<Livro> listAll() {
-        return livroRepository.findAll();
+    public ResponseEntity<List<LivroDTO>> listAll() {
+        return ResponseEntity.ok(livroService.findAll());
     }
 
-    @PostMapping("/cadastro")
-    public LivroRequestDTO registerBook(@RequestBody LivroCreateDTO livroCreateDTO) {
-        Autor autor = autorRepository.findById(livroCreateDTO.getAutorId()).orElseThrow(
-                () -> new AutorNotFoundException(livroCreateDTO.getAutorId())
-        );
-        Livro livro = new Livro();
-        livro.setTitulo(livroCreateDTO.getTitulo());
-        livro.setAutor(autor);
-        livro.setEstoque(livroCreateDTO.getEstoque());
-        livroRepository.save(livro);
-        return new LivroRequestDTO(
-                livro.getTitulo(),
-                livro.getAutor().getNome(),
-                livro.getEstoque(),
-                livro.getId()
-        );
+    @PostMapping
+    public ResponseEntity<LivroDTO> create(@RequestBody LivroDTO livroDTO) {
+        LivroDTO createdLivro = livroService.create(livroDTO);
+        URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/livro/{id}")
+                .buildAndExpand(createdLivro.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(createdLivro);
     }
 
-    @GetMapping("/{id}") // Atualizar Depois Utilizando DTOs
-    public LivroRequestDTO showBook(@PathVariable Long id) {
-        Livro livro = livroRepository.findById(id).orElseThrow(
-                () -> new BookNotFoundException(id)
-        );
-
-        return new LivroRequestDTO(
-                livro.getTitulo(),
-                livro.getAutor().getNome(),
-                livro.getEstoque(),
-                livro.getId()
-        );
+    @GetMapping("/{id}")
+    public ResponseEntity<LivroDTO> showBook(@PathVariable Long id) {
+        return ResponseEntity.ok(livroService.findById(id));
     }
 
-    @PutMapping("/atualizar/{id}")
-    public LivroRequestDTO updateBook(@RequestBody LivroCreateDTO livroCreateDTO, @PathVariable Long id) {
-        Livro livro = livroRepository.findById(id).orElseThrow(
-                () -> new BookNotFoundException(id)
-        );
-
-
-        if(livroCreateDTO.getAutorId() != null) {
-            Autor autor = autorRepository.findById(livroCreateDTO.getAutorId()).orElseThrow(
-                    () -> new AutorNotFoundException(livroCreateDTO.getAutorId())
-            );
-            livro.setAutor(autor);
-        }
-        if(livroCreateDTO.getTitulo() != null) {
-            livro.setTitulo(livroCreateDTO.getTitulo());
-        }
-        if(livroCreateDTO.getEstoque() != null) {
-            livro.setEstoque(livroCreateDTO.getEstoque());
-        }
-        livroRepository.save(livro);
-
-        return new LivroRequestDTO(
-                livro.getTitulo(),
-                livro.getAutor().getNome(),
-                livro.getEstoque(),
-                livro.getId()
-        );
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<LivroDTO> updateBook(@RequestBody LivroDTO livroDTO, @PathVariable Long id) {
+        return ResponseEntity.ok(livroService.update(livroDTO, id));
     }
 
-
-    @DeleteMapping("/excluir/{id}")
-    public void delete(@PathVariable Long id) {
-        livroRepository.findById(id).orElseThrow(
-                () -> new BookNotFoundException(id)
-        );
-
-        if(emprestimoService.bookHaveLoan(id)) {
-            throw new BookAlreadyBorrowed("Book with id: " + id + " already borrowed");
-        } else {
-            livroRepository.deleteById(id);
-        }
-    }
 
 }
