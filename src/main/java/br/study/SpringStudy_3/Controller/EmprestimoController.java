@@ -1,78 +1,63 @@
 package br.study.SpringStudy_3.Controller;
 
-import br.study.SpringStudy_3.Entity.Emprestimo;
-import br.study.SpringStudy_3.Entity.Membro;
-import br.study.SpringStudy_3.Repository.EmpRepository;
-import br.study.SpringStudy_3.Repository.MembroRepository;
-import br.study.SpringStudy_3.DTO.EmpCreateDTO;
 import br.study.SpringStudy_3.DTO.EmpDTO;
+import br.study.SpringStudy_3.DTO.EmpLateStatusUpdateDTO;
+import br.study.SpringStudy_3.DTO.EmpMemberLoanStatusDTO;
+import br.study.SpringStudy_3.DTO.EmpMemberSummaryDTO;
 import br.study.SpringStudy_3.DTO.EmpRequestDTO;
 import br.study.SpringStudy_3.Service.EmprestimoService;
-import br.study.SpringStudy_3.Service.Enum.EmpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/emprestimo")
 public class EmprestimoController {
-    @Autowired
-    EmpRepository empRepository;
-    @Autowired
-    MembroRepository membroRepository;
-    @Autowired
-    EmprestimoService emprestimoService;
+    private final EmprestimoService emprestimoService;
 
-    @GetMapping
-    public List<EmpRequestDTO> listAll() {
-        List<Emprestimo> emprestimos = empRepository.findAll();
-        List<EmpRequestDTO> empRequestDTOS = new ArrayList<>();
-
-        for(Emprestimo emp : emprestimos) {
-            empRequestDTOS.add(new EmpRequestDTO(
-               emp.getMembro().getNome(),
-               emp.getMembro().getId(),
-               emp.getLivro().getTitulo(),
-                    emp.getStatus()
-            ));
-        }
-        return empRequestDTOS;
+    public EmprestimoController(EmprestimoService emprestimoService) {
+        this.emprestimoService = emprestimoService;
     }
 
-    @PostMapping("/registrar")
-    public Emprestimo registerLoan(@RequestBody EmpCreateDTO empCreateDTO) {
-        return emprestimoService.toLoan(empCreateDTO.getMembroId(), empCreateDTO.getLivroId());
+    @GetMapping
+    public ResponseEntity<List<EmpRequestDTO>> listAll() {
+        return ResponseEntity.ok(emprestimoService.findAll());
+    }
+
+    @PostMapping
+    public ResponseEntity<EmpDTO> registerLoan(@RequestBody EmpDTO empDTO) {
+        EmpDTO createdLoan = emprestimoService.toLoan(empDTO.getMembroId(), empDTO.getLivroId());
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{membroId}/{livroId}")
+                .buildAndExpand(createdLoan.getMembroId(), createdLoan.getLivroId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(createdLoan);
     }
 
     @GetMapping("/membro/{id}")
-    public EmpDTO showById(@PathVariable("id") Long idMember) {
-        Membro membro = membroRepository.findById(idMember).orElseThrow(
-                () -> new MemberNotFoundException(idMember)
-        );
-        Long emprestimos = empRepository.countEmprestimoByMembro_IdAndStatus(idMember, EmpStatus.EMPRESTADO, EmpStatus.ATRASADO);
-
-        return new EmpDTO(membro.getNome(), emprestimos);
+    public ResponseEntity<EmpMemberSummaryDTO> showById(@PathVariable Long id) {
+        return ResponseEntity.ok(emprestimoService.getMemberLoanSummary(id));
     }
-
 
     @PutMapping("/atualizar-status")
-    public ResponseEntity<String> checkLateLoans() {
-        int modified = emprestimoService.checkLateLoans();
-        if(modified == 0) {
-            return ResponseEntity.ok("No loans are Late");
-        }
-        return ResponseEntity.ok(modified + " Loans updated to ATRASADO");
+    public ResponseEntity<EmpLateStatusUpdateDTO> checkLateLoans() {
+        return ResponseEntity.ok(new EmpLateStatusUpdateDTO(emprestimoService.checkLateLoans()));
     }
 
-    @PutMapping("/livro/devolver/{id}/membro/{idMember}")
-    public ResponseEntity<String> returnLoan(@PathVariable("id") Long idBook, @PathVariable("idMember") Long idMember) {
-        emprestimoService.returnLoan(idBook, idMember);
-        return ResponseEntity.ok("Book with id: " + idBook + " has been returned");
+    @PutMapping("/devolver/{livroId}/{membroId}")
+    public ResponseEntity<EmpDTO> returnLoan(
+            @PathVariable Long livroId,
+            @PathVariable Long membroId
+    ) {
+        return ResponseEntity.ok(emprestimoService.returnLoan(livroId, membroId));
     }
-    
 
+    @GetMapping("/membro/{id}/ativo")
+    public ResponseEntity<EmpMemberLoanStatusDTO> memberHaveLoan(@PathVariable Long id) {
+        return ResponseEntity.ok(new EmpMemberLoanStatusDTO(id, emprestimoService.memberHaveLoan(id)));
+    }
 }
-

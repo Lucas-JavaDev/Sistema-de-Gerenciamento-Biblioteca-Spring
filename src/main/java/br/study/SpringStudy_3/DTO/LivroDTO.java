@@ -16,13 +16,13 @@ public class LivroDTO {
     private Integer estoque;
 
 
-    private AutorDTO autor;
+    private AutorRequestDTO autor;
 
     public LivroDTO(Livro livro){
         this.id = livro.getId();
         this.titulo = livro.getTitulo();
         this.estoque = livro.getEstoque();
-        this.autor = new AutorDTO(livro.getAutor());
+        this.autor = new AutorRequestDTO(livro.getAutor());
     }
 
 

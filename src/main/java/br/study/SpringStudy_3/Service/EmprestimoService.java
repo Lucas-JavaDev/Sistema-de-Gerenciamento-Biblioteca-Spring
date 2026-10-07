@@ -1,6 +1,9 @@
 package br.study.SpringStudy_3.Service;
 
 
+import br.study.SpringStudy_3.DTO.EmpDTO;
+import br.study.SpringStudy_3.DTO.EmpMemberSummaryDTO;
+import br.study.SpringStudy_3.DTO.EmpRequestDTO;
 import br.study.SpringStudy_3.Entity.Emprestimo;
 import br.study.SpringStudy_3.Entity.Livro;
 import br.study.SpringStudy_3.Entity.Membro;
@@ -9,7 +12,6 @@ import br.study.SpringStudy_3.Repository.EmpRepository;
 import br.study.SpringStudy_3.Repository.LivroRepository;
 import br.study.SpringStudy_3.Repository.MembroRepository;
 import br.study.SpringStudy_3.Service.Enum.EmpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,62 +22,49 @@ import java.util.Optional;
 @Service
 public class EmprestimoService {
 
-    @Autowired
-    private MembroRepository membroRepository;
-    @Autowired
-    private LivroRepository livroRepository;
-    @Autowired
-    private EmpRepository emprestimoRepository;
+    // TODO: revisar integralmente a regra de empréstimo, incluindo DTOs, Controller,
+    // Repository e query methods relacionados.
+    private final MembroRepository membroRepository;
+    private final LivroRepository livroRepository;
+    private final EmpRepository emprestimoRepository;
+
+    public EmprestimoService(MembroRepository membroRepository, LivroRepository livroRepository, EmpRepository emprestimoRepository) {
+        this.membroRepository = membroRepository;
+        this.livroRepository = livroRepository;
+        this.emprestimoRepository = emprestimoRepository;
+    }
+
+
+
 
     @Transactional
-    public Emprestimo toLoan(Long idMember, Long idBook) {
+    public EmpDTO toLoan(Long idMember, Long idBook) {
         Livro livro = livroRepository.findById(idBook).orElseThrow(
-                () -> new BookNotFoundException(idBook)
+                () -> new ResourceNotFoundException("Livro não encontrado")
         );
         Membro membro = membroRepository.findById(idMember).orElseThrow(
-                () -> new MemberNotFoundException(idMember)
+                () -> new ResourceNotFoundException("Membro não encontrado")
         );
 
-        if(emprestimoRepository.existsByLivroAndMembroAndStatus(
-                livro,
-                membro,
-                EmpStatus.EMPRESTADO,
-                EmpStatus.ATRASADO
-        )) {
-            throw new BookAlreadyBorrowed(idBook, idMember);
-        }
-        if(maxLoans(idMember)) {
-            throw new MaxLoanLimitReachedException(idMember);
-        }
-        if(livro.getEstoque() < 1) {
-            throw new BookStockIsEmptyException(idBook);
-        }
-        Emprestimo emprestimo = new Emprestimo();
-        emprestimo.setMembro(membro);
-        emprestimo.setLivro(livro);
-        emprestimo.setDataEmprestimo(LocalDate.now());
-        emprestimo.setStatus(EmpStatus.EMPRESTADO);
-        emprestimoRepository.save(emprestimo);
-        livro.setEstoque(livro.getEstoque() - 1);
-        livroRepository.save(livro);
-        return emprestimo;
+        registLoan(livro, membro);
+        return new EmpDTO(membro.getId(), livro.getId());
     }
 
     public boolean maxLoans(Long idMember) {
         if(!membroRepository.existsById(idMember)) {
-            throw new MemberNotFoundException(idMember);
+            throw new ResourceNotFoundException("Membro não encontrado");
         }
-        return emprestimoRepository.countEmprestimoByMembro_IdAndStatus(idMember, EmpStatus.EMPRESTADO, EmpStatus.ATRASADO) >= 5;
+        return emprestimoRepository.countEmprestimo(idMember, EmpStatus.EMPRESTADO, EmpStatus.ATRASADO) >= 5;
     }
 
     @Transactional
-    public void returnLoan(Long idBook, Long idMember) {
+    public EmpDTO returnLoan(Long idBook, Long idMember) {
         Livro livro = livroRepository.findById(idBook).orElseThrow(
-                () -> new BookNotFoundException(idBook)
+                () -> new ResourceNotFoundException("Livro com id: " + idBook + "não encontrado")
         );
 
         Membro membro = membroRepository.findById(idMember).orElseThrow(
-                () -> new MemberNotFoundException(idMember)
+                () -> new ResourceNotFoundException("Membro com id: " + idMember + "não encontrado")
         );
 
         Emprestimo emprestimo = emprestimoRepository.findByMembroAndLivroAndStatus(
@@ -83,8 +72,8 @@ public class EmprestimoService {
                 livro,
                 EmpStatus.EMPRESTADO
         ).orElseThrow(
-                () -> new LoanNotFoundException("Member with id: " + idMember +
-                        " don't have an active Loan with Book id: " + idBook)
+                () -> new ResourceNotFoundException("Membro com id: " + idMember +
+                        "não tem um emprestimo ativo do livro: " + livro.getTitulo())
         );
 
         emprestimo.setDataDevolucao(LocalDate.now());
@@ -93,6 +82,30 @@ public class EmprestimoService {
 
         livro.setEstoque(livro.getEstoque() + 1);
         livroRepository.save(livro);
+        return new EmpDTO(membro.getId(), livro.getId());
+    }
+
+    public List<EmpRequestDTO> findAll() {
+        return emprestimoRepository.findAll().stream()
+                .map(emprestimo -> new EmpRequestDTO(
+                        emprestimo.getMembro().getNome(),
+                        emprestimo.getMembro().getId(),
+                        emprestimo.getLivro().getTitulo(),
+                        emprestimo.getStatus()
+                ))
+                .toList();
+    }
+
+    public EmpMemberSummaryDTO getMemberLoanSummary(Long idMember) {
+        Membro membro = membroRepository.findById(idMember).orElseThrow(
+                () -> new ResourceNotFoundException("Membro com id: " + idMember + " não encontrado")
+        );
+        Long loanCount = emprestimoRepository.countEmprestimo(
+                idMember,
+                EmpStatus.EMPRESTADO,
+                EmpStatus.ATRASADO
+        );
+        return new EmpMemberSummaryDTO(membro.getNome(), loanCount);
     }
 
     public int checkLateLoans() {
@@ -115,7 +128,7 @@ public class EmprestimoService {
 
     public boolean bookHaveLoan(Long idBook) {
         Livro livro = livroRepository.findById(idBook).orElseThrow(
-                () -> new BookNotFoundException(idBook)
+                () -> new ResourceNotFoundException("Livro com id: " + idBook + "não encontrado")
         );
 
         Optional<Emprestimo> empOptional = emprestimoRepository.findByLivroAndStatus(
@@ -125,11 +138,40 @@ public class EmprestimoService {
         return empOptional.isPresent();
     }
 
-    // Completar Metodo
+
     public boolean memberHaveLoan(Long idMember) {
         Membro membro = membroRepository.findById(idMember).orElseThrow(
-                () -> new MemberNotFoundException(idMember)
+                () -> new ResourceNotFoundException("Membro com id: " + idMember + " não encontrado")
         );
         return emprestimoRepository.findByMembroAndStatus(membro, EmpStatus.EMPRESTADO).isPresent();
     }
+
+    private void registLoan(Livro livro, Membro membro) {
+        if(emprestimoRepository.existsByLivroAndMembroAndStatus(
+                livro,
+                membro,
+                EmpStatus.EMPRESTADO,
+                EmpStatus.ATRASADO
+        )) {
+            throw new BookAlreadyBorrowed(livro.getId(), membro.getId());
+        }
+        if(maxLoans(membro.getId())) {
+            throw new MaxLoanLimitReachedException(membro.getId());
+        }
+        if(livro.getEstoque() < 1) {
+            throw new BookStockIsEmptyException(livro.getId());
+        }
+        Emprestimo emprestimo = new Emprestimo();
+        emprestimo.setMembro(membro);
+        emprestimo.setLivro(livro);
+        emprestimo.setDataEmprestimo(LocalDate.now());
+        emprestimo.setStatus(EmpStatus.EMPRESTADO);
+        emprestimoRepository.save(emprestimo);
+        livro.setEstoque(livro.getEstoque() - 1);
+        livroRepository.save(livro);
+    }
+
+
+
+
 }

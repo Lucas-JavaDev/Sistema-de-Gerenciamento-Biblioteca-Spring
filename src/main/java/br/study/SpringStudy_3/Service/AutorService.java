@@ -6,6 +6,7 @@ import br.study.SpringStudy_3.Entity.Autor;
 import br.study.SpringStudy_3.Exception.ResourceNotFoundException;
 import br.study.SpringStudy_3.Repository.AutorRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,6 +45,7 @@ public class AutorService {
         autorRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public AutorDTO findById(Long id) {
         Autor autor = autorRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Autor não encontrado")
@@ -52,6 +54,7 @@ public class AutorService {
         return new AutorDTO(autor);
     }
 
+    @Transactional(readOnly = true)
     public List<AutorDTO> findAll() {
         List<Autor> autors = autorRepository.findAll();
 
