@@ -10,22 +10,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(BookNotFoundException.class)
-    public ResponseEntity<BookErrorMessage> handleBookNotFoundException(BookNotFoundException e){
-        BookErrorMessage bookErrorMessage = new BookErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(bookErrorMessage);
-    }
-
-    @ExceptionHandler(AutorNotFoundException.class)
-    public ResponseEntity<AutorErrorMessage> handleAutorNotFoundException(AutorNotFoundException e){
-        AutorErrorMessage autorErrorMessage = new AutorErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(autorErrorMessage);
-    }
-
-    @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<MemberErrorMessage>  handleMemberNotFoundException(MemberNotFoundException e) {
-        MemberErrorMessage memberErrorMessage = new MemberErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(memberErrorMessage);
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ResourceNotFoundErrorMessage> handleResourceNotFoundException(ResourceNotFoundException e) {
+        ResourceNotFoundErrorMessage errorMessage =
+                new ResourceNotFoundErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
     }
 
     @ExceptionHandler(BookAlreadyBorrowed.class)
@@ -33,14 +22,6 @@ public class GlobalExceptionHandler {
         BookErrorMessage bookErrorMessage = new BookErrorMessage(HttpStatus.CONFLICT, e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(bookErrorMessage);
     }
-
-    @ExceptionHandler(LoanNotFoundException.class)
-    public ResponseEntity<LoanNotFoundErrorMessage> handleLoanNotFoundException(LoanNotFoundException e) {
-        LoanNotFoundErrorMessage errorMessage = new LoanNotFoundErrorMessage(HttpStatus.NOT_FOUND, e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
-    }
-
-
 
     @ExceptionHandler(BookStockIsEmptyException.class)
     public ResponseEntity<BookStockEmptyErrorMessage> hanldeBookStockIsEmptyException(BookStockIsEmptyException e) {
