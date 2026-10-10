@@ -2,7 +2,6 @@ package br.study.SpringStudy_3.Service;
 
 
 import br.study.SpringStudy_3.DTO.EmpDTO;
-import br.study.SpringStudy_3.DTO.EmpMemberSummaryDTO;
 import br.study.SpringStudy_3.DTO.EmpRequestDTO;
 import br.study.SpringStudy_3.Entity.Emprestimo;
 import br.study.SpringStudy_3.Entity.Livro;
@@ -11,6 +10,7 @@ import br.study.SpringStudy_3.Exception.*;
 import br.study.SpringStudy_3.Repository.EmpRepository;
 import br.study.SpringStudy_3.Repository.LivroRepository;
 import br.study.SpringStudy_3.Repository.MembroRepository;
+import br.study.SpringStudy_3.Repository.Projection.EmpProjection;
 import br.study.SpringStudy_3.Service.Enum.EmpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +22,7 @@ import java.util.Optional;
 @Service
 public class EmprestimoService {
 
-    // TODO: revisar integralmente a regra de empréstimo, incluindo DTOs, Controller,
-    // Repository e query methods relacionados.
+
     private final MembroRepository membroRepository;
     private final LivroRepository livroRepository;
     private final EmpRepository emprestimoRepository;
@@ -96,16 +95,16 @@ public class EmprestimoService {
                 .toList();
     }
 
-    public EmpMemberSummaryDTO getMemberLoanSummary(Long idMember) {
+    public EmpRequestDTO getMemberLoans(Long idMember) {
         Membro membro = membroRepository.findById(idMember).orElseThrow(
                 () -> new ResourceNotFoundException("Membro com id: " + idMember + " não encontrado")
         );
-        Long loanCount = emprestimoRepository.countEmprestimo(
+
+        List<EmpProjection> livros = emprestimoRepository.findMemberLoans(
                 idMember,
-                EmpStatus.EMPRESTADO,
-                EmpStatus.ATRASADO
+                List.of(EmpStatus.EMPRESTADO, EmpStatus.ATRASADO)
         );
-        return new EmpMemberSummaryDTO(membro.getNome(), loanCount);
+        return new EmpRequestDTO(membro.getNome(), livros);
     }
 
     public int checkLateLoans() {

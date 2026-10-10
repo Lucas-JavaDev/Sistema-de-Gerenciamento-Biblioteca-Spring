@@ -1,9 +1,6 @@
 package br.study.SpringStudy_3.Controller;
 
 import br.study.SpringStudy_3.DTO.EmpDTO;
-import br.study.SpringStudy_3.DTO.EmpLateStatusUpdateDTO;
-import br.study.SpringStudy_3.DTO.EmpMemberLoanStatusDTO;
-import br.study.SpringStudy_3.DTO.EmpMemberSummaryDTO;
 import br.study.SpringStudy_3.DTO.EmpRequestDTO;
 import br.study.SpringStudy_3.Service.EmprestimoService;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +25,11 @@ public class EmprestimoController {
     }
 
     @PostMapping
-    public ResponseEntity<EmpDTO> registerLoan(@RequestBody EmpDTO empDTO) {
-        EmpDTO createdLoan = emprestimoService.toLoan(empDTO.getMembroId(), empDTO.getLivroId());
+    public ResponseEntity<EmpDTO> registerLoan(@RequestBody EmpRequestDTO empRequestDTO) {
+        EmpDTO createdLoan = emprestimoService.toLoan(
+                empRequestDTO.getMembroId(),
+                empRequestDTO.getLivroId()
+        );
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{membroId}/{livroId}")
                 .buildAndExpand(createdLoan.getMembroId(), createdLoan.getLivroId())
@@ -39,13 +39,15 @@ public class EmprestimoController {
     }
 
     @GetMapping("/membro/{id}")
-    public ResponseEntity<EmpMemberSummaryDTO> showById(@PathVariable Long id) {
-        return ResponseEntity.ok(emprestimoService.getMemberLoanSummary(id));
+    public ResponseEntity<EmpRequestDTO> showById(@PathVariable Long id) {
+        return ResponseEntity.ok(emprestimoService.getMemberLoans(id));
     }
 
     @PutMapping("/atualizar-status")
-    public ResponseEntity<EmpLateStatusUpdateDTO> checkLateLoans() {
-        return ResponseEntity.ok(new EmpLateStatusUpdateDTO(emprestimoService.checkLateLoans()));
+    public ResponseEntity<EmpDTO> checkLateLoans() {
+        EmpDTO result = new EmpDTO();
+        result.setLoansUpdated(emprestimoService.checkLateLoans());
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/devolver/{livroId}/{membroId}")
@@ -57,7 +59,10 @@ public class EmprestimoController {
     }
 
     @GetMapping("/membro/{id}/ativo")
-    public ResponseEntity<EmpMemberLoanStatusDTO> memberHaveLoan(@PathVariable Long id) {
-        return ResponseEntity.ok(new EmpMemberLoanStatusDTO(id, emprestimoService.memberHaveLoan(id)));
+    public ResponseEntity<EmpDTO> memberHaveLoan(@PathVariable Long id) {
+        EmpDTO result = new EmpDTO();
+        result.setMembroId(id);
+        result.setHasActiveLoan(emprestimoService.memberHaveLoan(id));
+        return ResponseEntity.ok(result);
     }
 }

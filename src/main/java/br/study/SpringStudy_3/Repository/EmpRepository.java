@@ -3,6 +3,7 @@ package br.study.SpringStudy_3.Repository;
 import br.study.SpringStudy_3.Entity.Emprestimo;
 import br.study.SpringStudy_3.Entity.Livro;
 import br.study.SpringStudy_3.Entity.Membro;
+import br.study.SpringStudy_3.Repository.Projection.EmpProjection;
 import br.study.SpringStudy_3.Service.Enum.EmpStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -45,4 +46,19 @@ public interface EmpRepository extends JpaRepository<Emprestimo, Long> {
     List<Emprestimo> findByStatus(EmpStatus status);
 
     Optional<Emprestimo> findByMembroAndLivroAndStatus(Membro membro, Livro livro, EmpStatus status);
+
+    @Query("""
+            SELECT l.titulo AS nome, l.id AS id, e.status AS status
+            FROM Emprestimo e
+            JOIN e.livro l
+            WHERE e.membro.id = :membroId
+              AND e.status IN :statuses
+            """)
+    List<EmpProjection> findMemberLoans(
+            @Param("membroId") Long membroId,
+            @Param("statuses") List<EmpStatus> statuses
+    );
+
+
+
 }
