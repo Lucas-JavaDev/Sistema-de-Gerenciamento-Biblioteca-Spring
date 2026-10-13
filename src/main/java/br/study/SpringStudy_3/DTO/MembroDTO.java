@@ -18,6 +18,7 @@ public class MembroDTO {
     private Long id;
 
     @NotBlank(message = "Nome requerido")
+    @Size(min = 3, max = 90, message = "Nome requer 3 a 90 caracteres")
     private String nome;
 
     @NotBlank(message = "CPF requerido")
