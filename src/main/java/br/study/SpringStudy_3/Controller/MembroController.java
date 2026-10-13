@@ -2,6 +2,7 @@ package br.study.SpringStudy_3.Controller;
 
 import br.study.SpringStudy_3.DTO.MembroDTO;
 import br.study.SpringStudy_3.Service.MembroService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,7 +21,7 @@ public class MembroController {
     }
 
     @PostMapping
-    public ResponseEntity<MembroDTO> create(@RequestBody MembroDTO membroDTO) {
+    public ResponseEntity<MembroDTO> create(@Valid @RequestBody MembroDTO membroDTO) {
         MembroDTO dto = membroService.create(membroDTO);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -40,7 +41,7 @@ public class MembroController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<MembroDTO> update(@PathVariable Long id, @RequestBody MembroDTO membroDTO) {
+    public ResponseEntity<MembroDTO> update(@PathVariable Long id, @Valid @RequestBody MembroDTO membroDTO) {
         return ResponseEntity.ok(membroService.update(membroDTO, id));
     }
 

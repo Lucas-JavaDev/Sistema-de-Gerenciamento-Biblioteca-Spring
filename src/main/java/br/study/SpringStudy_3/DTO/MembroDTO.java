@@ -2,6 +2,7 @@ package br.study.SpringStudy_3.DTO;
 
 
 import br.study.SpringStudy_3.Entity.Membro;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,9 +16,15 @@ public class MembroDTO {
 
 
     private Long id;
+
+    @NotBlank(message = "Nome requerido")
     private String nome;
 
+    @NotBlank(message = "CPF requerido")
+    @Size(min = 11, max = 11, message = "CPF deve conter 11 digitos")
     private String cpf;
+
+    @Email(message = "Email inválido")
     private String email;
 
     public MembroDTO(Membro membro) {

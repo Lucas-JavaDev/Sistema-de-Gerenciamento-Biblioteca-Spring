@@ -3,6 +3,8 @@ package br.study.SpringStudy_3.DTO;
 
 import br.study.SpringStudy_3.Entity.Autor;
 import br.study.SpringStudy_3.Entity.Livro;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ public class AutorDTO {
 
 
     private Long id;
+    @NotBlank(message = "Nome requerido")
+    @Size(min = 3, max = 90, message = "Nome precisa conter de 3 a 90 caracteres")
     private String nome;
 
 

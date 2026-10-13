@@ -2,6 +2,7 @@ package br.study.SpringStudy_3.Controller;
 
 import br.study.SpringStudy_3.DTO.AutorDTO;
 import br.study.SpringStudy_3.Service.AutorService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,7 +32,7 @@ public class AutorController {
     }
 
     @PostMapping
-    public ResponseEntity<AutorDTO> createAuthor(@RequestBody AutorDTO autorCreateDTO){
+    public ResponseEntity<AutorDTO> createAuthor(@Valid @RequestBody AutorDTO autorCreateDTO){
         AutorDTO dto = autorService.create(autorCreateDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/autor/{id}")
@@ -41,7 +42,7 @@ public class AutorController {
     }
 
     @PutMapping(value = "{id}")
-    public ResponseEntity<AutorDTO> updateAuthor(@RequestBody AutorDTO autorCreateDTO, @PathVariable Long id){
+    public ResponseEntity<AutorDTO> updateAuthor(@Valid @RequestBody AutorDTO autorCreateDTO, @PathVariable Long id){
         return ResponseEntity.ok(autorService.update(autorCreateDTO, id));
     }
 

@@ -3,6 +3,7 @@ package br.study.SpringStudy_3.Controller;
 import br.study.SpringStudy_3.DTO.EmpDTO;
 import br.study.SpringStudy_3.DTO.EmpRequestDTO;
 import br.study.SpringStudy_3.Service.EmprestimoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -25,7 +26,7 @@ public class EmprestimoController {
     }
 
     @PostMapping
-    public ResponseEntity<EmpDTO> registerLoan(@RequestBody EmpRequestDTO empRequestDTO) {
+    public ResponseEntity<EmpDTO> registerLoan(@Valid @RequestBody EmpRequestDTO empRequestDTO) {
         EmpDTO createdLoan = emprestimoService.toLoan(
                 empRequestDTO.getMembroId(),
                 empRequestDTO.getLivroId()
