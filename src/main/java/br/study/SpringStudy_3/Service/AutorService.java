@@ -39,7 +39,7 @@ public class AutorService {
     }
 
     public void delete(Long id) {
-        if(autorRepository.existsById(id)) {
+        if(!autorRepository.existsById(id)) {
             throw new ResourceNotFoundException("Autor não encontrado");
         }
         autorRepository.deleteById(id);
