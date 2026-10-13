@@ -26,10 +26,10 @@ public class EmprestimoController {
     }
 
     @PostMapping
-    public ResponseEntity<EmpDTO> registerLoan(@Valid @RequestBody EmpRequestDTO empRequestDTO) {
+    public ResponseEntity<EmpDTO> registerLoan(@Valid @RequestBody EmpDTO empDTO) {
         EmpDTO createdLoan = emprestimoService.toLoan(
-                empRequestDTO.getMembroId(),
-                empRequestDTO.getLivroId()
+                empDTO.getMembroId(),
+                empDTO.getLivroId()
         );
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{membroId}/{livroId}")

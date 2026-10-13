@@ -61,7 +61,7 @@ public class MembroService {
 
 
     public void delete(Long id) {
-        if(membroRepository.existsById(id)) {
+        if(!membroRepository.existsById(id)) {
             throw new ResourceNotFoundException("Membro não encontrado");
         }
 

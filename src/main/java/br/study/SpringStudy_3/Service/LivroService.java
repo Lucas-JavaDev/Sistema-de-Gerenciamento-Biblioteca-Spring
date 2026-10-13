@@ -84,4 +84,12 @@ public class LivroService {
 
         livroRepository.save(livro);
     }
+
+
+    public void deleteById(Long id) {
+        if(!livroRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Membro não encontrado");
+        }
+        livroRepository.deleteById(id);
+    }
 }
