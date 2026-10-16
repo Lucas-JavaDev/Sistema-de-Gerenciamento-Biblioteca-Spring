@@ -66,4 +66,7 @@ public class EmprestimoController {
         result.setHasActiveLoan(emprestimoService.memberHaveLoan(id));
         return ResponseEntity.ok(result);
     }
+
+
+
 }

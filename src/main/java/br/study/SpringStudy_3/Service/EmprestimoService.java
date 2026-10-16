@@ -66,10 +66,11 @@ public class EmprestimoService {
                 () -> new ResourceNotFoundException("Membro com id: " + idMember + "não encontrado")
         );
 
-        Emprestimo emprestimo = emprestimoRepository.findByMembroAndLivroAndStatus(
+        Emprestimo emprestimo = emprestimoRepository.findMembroLivroStatus(
                 membro,
                 livro,
-                EmpStatus.EMPRESTADO
+                EmpStatus.EMPRESTADO,
+                EmpStatus.ATRASADO
         ).orElseThrow(
                 () -> new ResourceNotFoundException("Membro com id: " + idMember +
                         "não tem um emprestimo ativo do livro: " + livro.getTitulo())
@@ -122,6 +123,7 @@ public class EmprestimoService {
 
         return modified;
     }
+
 
 
 

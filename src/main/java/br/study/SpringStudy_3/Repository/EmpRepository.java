@@ -19,6 +19,7 @@ public interface EmpRepository extends JpaRepository<Emprestimo, Long> {
     Optional<Emprestimo> findByLivroAndStatus(Livro livro, EmpStatus status);
 
     Optional<Emprestimo> findByMembroAndStatus(Membro membro, EmpStatus status);
+    Optional<Emprestimo> findFirstByMembroAndStatusOrderByIdAsc(Membro membro, EmpStatus status);
 
 
     @Query("""
@@ -44,8 +45,25 @@ public interface EmpRepository extends JpaRepository<Emprestimo, Long> {
     );
 
     List<Emprestimo> findByStatus(EmpStatus status);
+    @Query("""
+           SELECT e FROM Emprestimo e
+           WHERE e.membro = :membro
+           AND e.livro = :livro
+           AND e.status = :status
+       
+           """)
+    Optional<Emprestimo> findMembroLivroStatus(Membro membro, Livro livro, EmpStatus status);
 
-    Optional<Emprestimo> findByMembroAndLivroAndStatus(Membro membro, Livro livro, EmpStatus status);
+
+    @Query("""
+           SELECT e FROM Emprestimo e
+           WHERE e.membro = :membro
+           AND e.livro = :livro
+           AND e.status IN (:status, :secStatus)
+           """)
+    Optional<Emprestimo> findMembroLivroStatus(Membro membro, Livro livro, EmpStatus status, EmpStatus secStatus);
+
+
 
     @Query("""
             SELECT l.titulo AS nome, l.id AS id, e.status AS status
