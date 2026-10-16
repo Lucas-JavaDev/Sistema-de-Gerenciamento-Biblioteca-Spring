@@ -1,6 +1,8 @@
 package br.study.SpringStudy_3.Controller;
 
 import br.study.SpringStudy_3.DTO.LivroDTO;
+import br.study.SpringStudy_3.DTO.LivroPutDTO;
+import br.study.SpringStudy_3.DTO.LivroUpdateDTO;
 import br.study.SpringStudy_3.Service.EmprestimoService;
 import br.study.SpringStudy_3.Service.LivroService;
 import jakarta.validation.Valid;
@@ -45,8 +47,8 @@ public class LivroController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<LivroDTO> updateBook(@Valid @RequestBody LivroDTO livroDTO, @PathVariable Long id) {
-        return ResponseEntity.ok(livroService.update(livroDTO, id));
+    public ResponseEntity<LivroDTO> updateBook(@Valid @RequestBody LivroPutDTO livroPutDTO, @PathVariable Long id) {
+        return ResponseEntity.ok(livroService.update(livroPutDTO, id));
     }
 
 
@@ -54,5 +56,11 @@ public class LivroController {
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
         livroService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<LivroDTO> updateBook(@PathVariable Long id, @Valid @RequestBody LivroUpdateDTO livroUpdateDTO) {
+        return ResponseEntity.ok(livroService.update(livroUpdateDTO, id));
     }
 }

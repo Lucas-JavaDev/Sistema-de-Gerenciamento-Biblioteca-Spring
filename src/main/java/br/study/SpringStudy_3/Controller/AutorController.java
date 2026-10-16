@@ -1,6 +1,7 @@
 package br.study.SpringStudy_3.Controller;
 
 import br.study.SpringStudy_3.DTO.AutorDTO;
+import br.study.SpringStudy_3.DTO.LivroDTO;
 import br.study.SpringStudy_3.Service.AutorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -51,4 +52,6 @@ public class AutorController {
         autorService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

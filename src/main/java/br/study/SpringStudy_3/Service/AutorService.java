@@ -29,6 +29,7 @@ public class AutorService {
 
     }
 
+    @Transactional
     public AutorDTO update(AutorDTO autorDTO, Long id) {
         Autor autor = autorRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Autor não encontrado")
