@@ -1,7 +1,10 @@
 package br.study.SpringStudy_3.Service;
 
 
+import br.study.SpringStudy_3.DTO.LivroUpdateDTO;
 import br.study.SpringStudy_3.DTO.MembroDTO;
+import br.study.SpringStudy_3.DTO.MembroUpdateDTO;
+import br.study.SpringStudy_3.Entity.Livro;
 import br.study.SpringStudy_3.Entity.Membro;
 import br.study.SpringStudy_3.Exception.ResourceNotFoundException;
 import br.study.SpringStudy_3.Repository.MembroRepository;
@@ -38,6 +41,15 @@ public class MembroService {
 
         return new MembroDTO(membro);
 
+    }
+
+    public MembroUpdateDTO update(MembroUpdateDTO membroUpdDTO, Long id) {
+        Membro membro = membroRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Membro não encontrado")
+        );
+
+        update(membro, membroUpdDTO);
+        return new MembroUpdateDTO(membro);
     }
 
     public MembroDTO findById(Long id) {
@@ -78,16 +90,25 @@ public class MembroService {
     }
 
 
-    // Atualizar valores (se nulo, deixar como esta)
+    // PUT
     private void update(Membro membro, MembroDTO membroDTO) {
-        if (membroDTO.getNome() != null) {
-            membro.setNome(membroDTO.getNome());
+
+        membro.setNome(membroDTO.getNome());
+        membro.setCpf(membroDTO.getCpf());
+        membro.setEmail(membroDTO.getEmail());
+        membroRepository.save(membro);
+    }
+
+    // Atualizar valores (se nulo, deixar como esta) -> PATCH
+    private void update(Membro membro, MembroUpdateDTO membroUpdateDTO) {
+        if(membroUpdateDTO.getNome() != null) {
+            membro.setNome(membroUpdateDTO.getNome());
         }
-        if (membroDTO.getCpf() != null) {
-            membro.setCpf(membroDTO.getCpf());
+        if(membroUpdateDTO.getCpf() != null) {
+            membro.setCpf(membroUpdateDTO.getCpf());
         }
-        if (membroDTO.getEmail() != null) {
-            membro.setEmail(membroDTO.getEmail());
+        if(membroUpdateDTO.getEmail() != null) {
+            membro.setEmail(membroUpdateDTO.getEmail());
         }
         membroRepository.save(membro);
     }

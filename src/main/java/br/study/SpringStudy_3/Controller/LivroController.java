@@ -18,11 +18,10 @@ import java.util.List;
 public class LivroController {
 
     private final LivroService livroService;
-    private final EmprestimoService emprestimoService;
 
-    public LivroController(LivroService livroService, EmprestimoService emprestimoService) {
+
+    public LivroController(LivroService livroService) {
         this.livroService = livroService;
-        this.emprestimoService = emprestimoService;
     }
 
     @GetMapping

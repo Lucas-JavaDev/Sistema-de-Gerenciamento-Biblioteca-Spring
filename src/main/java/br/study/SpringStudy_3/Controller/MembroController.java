@@ -1,6 +1,7 @@
 package br.study.SpringStudy_3.Controller;
 
 import br.study.SpringStudy_3.DTO.MembroDTO;
+import br.study.SpringStudy_3.DTO.MembroUpdateDTO;
 import br.study.SpringStudy_3.Service.MembroService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,11 @@ public class MembroController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         membroService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<MembroUpdateDTO> update(@Valid @RequestBody MembroUpdateDTO membroUpdateDTO, @PathVariable Long id) {
+        return ResponseEntity.ok(membroService.update(membroUpdateDTO, id));
     }
 
 
