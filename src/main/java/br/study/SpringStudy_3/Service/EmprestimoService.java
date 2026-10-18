@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +35,12 @@ public class EmprestimoService {
     }
 
 
+    public EmpDTO findById(Long id) {
+        Emprestimo emprestimo = emprestimoRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Emprestimo não encontrado")
+        );
+        return new EmpDTO(emprestimo);
+    }
 
 
     @Transactional
@@ -45,8 +52,9 @@ public class EmprestimoService {
                 () -> new ResourceNotFoundException("Membro não encontrado")
         );
 
-        registLoan(livro, membro);
-        return new EmpDTO(membro.getId(), livro.getId());
+        Emprestimo emprestimo = registLoan(livro, membro);
+
+        return new EmpDTO(emprestimo);
     }
 
     public boolean maxLoans(Long idMember) {
@@ -82,7 +90,7 @@ public class EmprestimoService {
 
         livro.setEstoque(livro.getEstoque() + 1);
         livroRepository.save(livro);
-        return new EmpDTO(membro.getId(), livro.getId());
+        return new EmpDTO(emprestimo);
     }
 
     public List<EmpRequestDTO> findAll() {
@@ -147,7 +155,7 @@ public class EmprestimoService {
         return emprestimoRepository.findByMembroAndStatus(membro, EmpStatus.EMPRESTADO).isPresent();
     }
 
-    private void registLoan(Livro livro, Membro membro) {
+    private Emprestimo registLoan(Livro livro, Membro membro) {
         if(emprestimoRepository.existsByLivroAndMembroAndStatus(
                 livro,
                 membro,
@@ -170,6 +178,7 @@ public class EmprestimoService {
         emprestimoRepository.save(emprestimo);
         livro.setEstoque(livro.getEstoque() - 1);
         livroRepository.save(livro);
+        return emprestimo;
     }
 
 

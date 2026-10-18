@@ -77,6 +77,11 @@ public interface EmpRepository extends JpaRepository<Emprestimo, Long> {
             @Param("statuses") List<EmpStatus> statuses
     );
 
-
+    @Query("""
+        SELECT e FROM Emprestimo e 
+        WHERE e.membro.id = :membroId
+        AND e.status = :status
+        """)
+    List<Emprestimo> findIdByMembroId(Long membroId, EmpStatus status);
 
 }

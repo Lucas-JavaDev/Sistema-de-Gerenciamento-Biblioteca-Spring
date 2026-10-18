@@ -32,12 +32,18 @@ public class EmprestimoController {
                 empDTO.getLivroId()
         );
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{membroId}/{livroId}")
-                .buildAndExpand(createdLoan.getMembroId(), createdLoan.getLivroId())
+                .path("/{empId}")
+                .buildAndExpand(createdLoan.getId())
                 .toUri();
 
         return ResponseEntity.created(uri).body(createdLoan);
     }
+
+    @GetMapping("/{empId}")
+    public ResponseEntity<EmpDTO> findById(@PathVariable Long empId) {
+        return ResponseEntity.ok(emprestimoService.findById(empId));
+    }
+
 
     @GetMapping("/membro/{id}")
     public ResponseEntity<EmpRequestDTO> showById(@PathVariable Long id) {

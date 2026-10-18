@@ -12,6 +12,8 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmpDTO {
 
+   private Long id;
+
    @NotNull(message = "ID do membro é obrigatório")
    @Positive(message = "ID do membro precisa ser positivo")
    private Long membroId;
@@ -24,15 +26,12 @@ public class EmpDTO {
    private Integer loansUpdated;
    private Boolean hasActiveLoan;
 
-   public EmpDTO(Long membroId, Long livroId) {
-      this.membroId = membroId;
-      this.livroId = livroId;
-   }
 
 
    public EmpDTO(Emprestimo emprestimo) {
-       this.membroId = emprestimo.getMembro().getId();
-       this.livroId = emprestimo.getLivro().getId();
+      id =  emprestimo.getId();
+      membroId = emprestimo.getMembro().getId();
+      livroId = emprestimo.getLivro().getId();
    }
 
 }
