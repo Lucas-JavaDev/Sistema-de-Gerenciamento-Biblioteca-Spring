@@ -12,6 +12,8 @@ import br.study.SpringStudy_3.Repository.LivroRepository;
 import br.study.SpringStudy_3.Repository.MembroRepository;
 import br.study.SpringStudy_3.Repository.Projection.EmpProjection;
 import br.study.SpringStudy_3.Service.Enum.EmpStatus;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +47,10 @@ public class EmprestimoService {
 
     @Transactional
     public EmpDTO toLoan(Long idMember, Long idBook) {
-        Livro livro = livroRepository.findById(idBook).orElseThrow(
+        Livro livro = livroRepository.findLivroById(idBook).orElseThrow(
                 () -> new ResourceNotFoundException("Livro não encontrado")
         );
-        Membro membro = membroRepository.findById(idMember).orElseThrow(
+        Membro membro = membroRepository.findMembroById(idMember).orElseThrow(
                 () -> new ResourceNotFoundException("Membro não encontrado")
         );
 
@@ -66,11 +68,11 @@ public class EmprestimoService {
 
     @Transactional
     public EmpDTO returnLoan(Long idBook, Long idMember) {
-        Livro livro = livroRepository.findById(idBook).orElseThrow(
+        Livro livro = livroRepository.findLivroById(idBook).orElseThrow(
                 () -> new ResourceNotFoundException("Livro com id: " + idBook + "não encontrado")
         );
 
-        Membro membro = membroRepository.findById(idMember).orElseThrow(
+        Membro membro = membroRepository.findMembroById(idMember).orElseThrow(
                 () -> new ResourceNotFoundException("Membro com id: " + idMember + "não encontrado")
         );
 
@@ -154,6 +156,7 @@ public class EmprestimoService {
         );
         return emprestimoRepository.findByMembroAndStatus(membro, EmpStatus.EMPRESTADO).isPresent();
     }
+
 
     private Emprestimo registLoan(Livro livro, Membro membro) {
         if(emprestimoRepository.existsByLivroAndMembroAndStatus(

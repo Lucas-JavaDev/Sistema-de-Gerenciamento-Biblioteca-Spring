@@ -5,7 +5,9 @@ import br.study.SpringStudy_3.Entity.Livro;
 import br.study.SpringStudy_3.Entity.Membro;
 import br.study.SpringStudy_3.Repository.Projection.EmpProjection;
 import br.study.SpringStudy_3.Service.Enum.EmpStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -29,6 +31,7 @@ public interface EmpRepository extends JpaRepository<Emprestimo, Long> {
               AND (e.status = :status OR e.status = :secStatus)
             """)
     Long countEmprestimo(Long memberId, EmpStatus status, EmpStatus secStatus);
+
 
     @Query("""
             SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END
@@ -77,11 +80,6 @@ public interface EmpRepository extends JpaRepository<Emprestimo, Long> {
             @Param("statuses") List<EmpStatus> statuses
     );
 
-    @Query("""
-        SELECT e FROM Emprestimo e 
-        WHERE e.membro.id = :membroId
-        AND e.status = :status
-        """)
-    List<Emprestimo> findIdByMembroId(Long membroId, EmpStatus status);
+
 
 }
