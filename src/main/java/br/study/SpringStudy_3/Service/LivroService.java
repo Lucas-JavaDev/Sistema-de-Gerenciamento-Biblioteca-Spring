@@ -6,6 +6,7 @@ import br.study.SpringStudy_3.DTO.LivroPutDTO;
 import br.study.SpringStudy_3.DTO.LivroUpdateDTO;
 import br.study.SpringStudy_3.Entity.Autor;
 import br.study.SpringStudy_3.Entity.Livro;
+import br.study.SpringStudy_3.Exception.BookHasLoansException;
 import br.study.SpringStudy_3.Exception.ResourceNotFoundException;
 import br.study.SpringStudy_3.Repository.AutorRepository;
 import br.study.SpringStudy_3.Repository.LivroRepository;
@@ -108,6 +109,9 @@ public class LivroService {
     public void deleteById(Long id) {
         if(!livroRepository.existsById(id)) {
             throw new ResourceNotFoundException("Membro não encontrado");
+        }
+        if(livroRepository.existsEmprestimoByLivroId(id)) {
+            throw new BookHasLoansException(id);
         }
         livroRepository.deleteById(id);
     }

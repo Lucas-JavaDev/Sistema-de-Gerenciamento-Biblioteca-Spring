@@ -29,6 +29,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(error);
     }
 
+    @ExceptionHandler(AuthorHasBooksException.class)
+    public ResponseEntity<CustomError> handleAuthorHasBooks(AuthorHasBooksException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        CustomError error = new CustomError(Instant.now(), status, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(error);
+    }
+
     @ExceptionHandler(BookStockIsEmptyException.class)
     public ResponseEntity<CustomError> hanldeBookStockIsEmptyException(BookStockIsEmptyException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
@@ -54,4 +61,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(error);
     }
 
+    @ExceptionHandler(BookHasLoansException.class)
+    public ResponseEntity<CustomError> handleBookHasLoans(BookHasLoansException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        CustomError error = new CustomError(Instant.now(), status, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(error);
+    }
 }

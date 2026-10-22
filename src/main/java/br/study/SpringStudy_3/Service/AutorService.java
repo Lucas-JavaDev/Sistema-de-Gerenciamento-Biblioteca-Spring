@@ -3,8 +3,10 @@ package br.study.SpringStudy_3.Service;
 
 import br.study.SpringStudy_3.DTO.AutorDTO;
 import br.study.SpringStudy_3.Entity.Autor;
+import br.study.SpringStudy_3.Exception.AuthorHasBooksException;
 import br.study.SpringStudy_3.Exception.ResourceNotFoundException;
 import br.study.SpringStudy_3.Repository.AutorRepository;
+import br.study.SpringStudy_3.Repository.LivroRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +16,11 @@ import java.util.List;
 public class AutorService {
 
     private final AutorRepository autorRepository;
+    private final LivroRepository livroRepository;
 
-    public AutorService(AutorRepository autorRepository) {
-            this.autorRepository = autorRepository;
+    public AutorService(AutorRepository autorRepository, LivroRepository livroRepository) {
+        this.autorRepository = autorRepository;
+        this.livroRepository = livroRepository;
     }
 
 
@@ -39,10 +43,16 @@ public class AutorService {
         return new AutorDTO(autorRepository.save(autor));
     }
 
+    @Transactional
     public void delete(Long id) {
         if(!autorRepository.existsById(id)) {
             throw new ResourceNotFoundException("Autor não encontrado");
         }
+
+        if(livroRepository.existsByAutor_Id(id)) {
+            throw new AuthorHasBooksException(id);
+        }
+
         autorRepository.deleteById(id);
     }
 
