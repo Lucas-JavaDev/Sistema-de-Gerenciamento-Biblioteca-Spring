@@ -27,10 +27,7 @@ public class EmpRequestDTO {
         this.status = status;
     }
 
-    public EmpRequestDTO(Long membroId, Long livroId) {
-        this.membroId = membroId;
-        this.livroId = livroId;
-    }
+
 
     public EmpRequestDTO(String nome, List<EmpProjection> livros) {
         this.nome = nome;

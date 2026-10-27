@@ -1,15 +1,15 @@
 package br.study.SpringStudy_3.Service;
 
 
-import br.study.SpringStudy_3.DTO.LivroUpdateDTO;
-import br.study.SpringStudy_3.DTO.MembroDTO;
+import br.study.SpringStudy_3.DTO.MembroRequestDTO;
+import br.study.SpringStudy_3.DTO.MembroResponseDTO;
 import br.study.SpringStudy_3.DTO.MembroUpdateDTO;
-import br.study.SpringStudy_3.Entity.Livro;
 import br.study.SpringStudy_3.Entity.Membro;
 import br.study.SpringStudy_3.Exception.ResourceNotFoundException;
 import br.study.SpringStudy_3.Repository.MembroRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,58 +17,61 @@ import java.util.List;
 public class MembroService {
 
     private final MembroRepository membroRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MembroService(MembroRepository membroRepository) {
+    public MembroService(MembroRepository membroRepository, PasswordEncoder passwordEncoder) {
         this.membroRepository = membroRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
 
-    public MembroDTO create(MembroDTO membroDTO) {
+    @Transactional
+    public MembroResponseDTO create(MembroRequestDTO membroRequestDTO) {
         Membro membro = new Membro();
 
-        setValues(membro, membroDTO);
+        setValues(membro, membroRequestDTO);
 
-        return new MembroDTO(membro);
+        return new MembroResponseDTO(membro);
     }
 
-    public MembroDTO update(MembroDTO membroDTO, Long id) {
+    public MembroResponseDTO update(MembroRequestDTO membroRequestDTO, Long id) {
         Membro membro = membroRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Membro não encontrado")
         );
 
-        update(membro, membroDTO);
+        update(membro, membroRequestDTO);
 
-        return new MembroDTO(membro);
+        return new MembroResponseDTO(membro);
 
     }
 
-    public MembroUpdateDTO update(MembroUpdateDTO membroUpdDTO, Long id) {
+    public MembroResponseDTO update(MembroUpdateDTO membroUpdDTO, Long id) {
         Membro membro = membroRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Membro não encontrado")
         );
 
         update(membro, membroUpdDTO);
-        return new MembroUpdateDTO(membro);
+        return new MembroResponseDTO(membro);
     }
 
-    public MembroDTO findById(Long id) {
+    public MembroResponseDTO findById(Long id) {
 
         Membro membro = membroRepository.findById(id).orElseThrow(
                 () ->  new ResourceNotFoundException("membro não encontrado")
         );
 
 
-        return new MembroDTO(membro);
+        return new MembroResponseDTO(membro);
 
     }
 
 
 
-    public List<MembroDTO> findAll() {
+    public List<MembroResponseDTO> findAll() {
         List<Membro> membros = membroRepository.findAll();
 
-        return membros.stream().map(membro -> new MembroDTO(membro)).toList();
+        return membros.stream().map(MembroResponseDTO::new).toList();
     }
 
 
@@ -81,21 +84,22 @@ public class MembroService {
     }
 
     // Setar valores
-    private void setValues(Membro membro, MembroDTO membroDTO) {
-        membro.setNome(membroDTO.getNome());
-        membro.setCpf(membroDTO.getCpf());
-        membro.setEmail(membroDTO.getEmail());
-
+    private void setValues(Membro membro, MembroRequestDTO membroRequestDTO) {
+        membro.setNome(membroRequestDTO.getNome());
+        membro.setCpf(membroRequestDTO.getCpf());
+        membro.setEmail(membroRequestDTO.getEmail());
+        membro.setPassword(passwordEncoder.encode(membroRequestDTO.getPassword()));
         membroRepository.save(membro);
     }
 
 
     // PUT
-    private void update(Membro membro, MembroDTO membroDTO) {
+    private void update(Membro membro, MembroRequestDTO membroRequestDTO) {
 
-        membro.setNome(membroDTO.getNome());
-        membro.setCpf(membroDTO.getCpf());
-        membro.setEmail(membroDTO.getEmail());
+        membro.setNome(membroRequestDTO.getNome());
+        membro.setCpf(membroRequestDTO.getCpf());
+        membro.setEmail(membroRequestDTO.getEmail());
+        membro.setPassword(passwordEncoder.encode(membroRequestDTO.getPassword()));
         membroRepository.save(membro);
     }
 

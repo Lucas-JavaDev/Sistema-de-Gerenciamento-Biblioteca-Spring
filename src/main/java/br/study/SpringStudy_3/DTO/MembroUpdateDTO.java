@@ -1,21 +1,17 @@
 package br.study.SpringStudy_3.DTO;
 
 
-import br.study.SpringStudy_3.Entity.Membro;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.br.CPF;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class MembroUpdateDTO {
-
-    private Long id;
 
     @Size(min = 3, max = 80, message = "Nome deve conter de 3 a 80 caracteres")
     private String nome;
@@ -28,12 +24,5 @@ public class MembroUpdateDTO {
 
     @Email(message = "Email inválido")
     private String email;
-
-    public MembroUpdateDTO(Membro membro) {
-        id = membro.getId();
-        nome = membro.getNome();
-        cpf = membro.getCpf();
-        email = membro.getEmail();
-    }
 
 }

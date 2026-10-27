@@ -1,6 +1,7 @@
 package br.study.SpringStudy_3.Controller;
 
-import br.study.SpringStudy_3.DTO.MembroDTO;
+import br.study.SpringStudy_3.DTO.MembroRequestDTO;
+import br.study.SpringStudy_3.DTO.MembroResponseDTO;
 import br.study.SpringStudy_3.DTO.MembroUpdateDTO;
 import br.study.SpringStudy_3.Service.MembroService;
 import jakarta.validation.Valid;
@@ -22,8 +23,8 @@ public class MembroController {
     }
 
     @PostMapping
-    public ResponseEntity<MembroDTO> create(@Valid @RequestBody MembroDTO membroDTO) {
-        MembroDTO dto = membroService.create(membroDTO);
+    public ResponseEntity<MembroResponseDTO> create(@Valid @RequestBody MembroRequestDTO membroRequestDTO) {
+        MembroResponseDTO dto = membroService.create(membroRequestDTO);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(dto.getId()).toUri();
@@ -32,18 +33,18 @@ public class MembroController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MembroDTO>> findAll() {
+    public ResponseEntity<List<MembroResponseDTO>> findAll() {
         return ResponseEntity.ok(membroService.findAll());
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<MembroDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<MembroResponseDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(membroService.findById(id));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<MembroDTO> update(@PathVariable Long id, @Valid @RequestBody MembroDTO membroDTO) {
-        return ResponseEntity.ok(membroService.update(membroDTO, id));
+    public ResponseEntity<MembroResponseDTO> update(@PathVariable Long id, @Valid @RequestBody MembroRequestDTO membroRequestDTO) {
+        return ResponseEntity.ok(membroService.update(membroRequestDTO, id));
     }
 
 
@@ -54,7 +55,7 @@ public class MembroController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<MembroUpdateDTO> update(@Valid @RequestBody MembroUpdateDTO membroUpdateDTO, @PathVariable Long id) {
+    public ResponseEntity<MembroResponseDTO> update(@Valid @RequestBody MembroUpdateDTO membroUpdateDTO, @PathVariable Long id) {
         return ResponseEntity.ok(membroService.update(membroUpdateDTO, id));
     }
 

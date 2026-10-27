@@ -6,6 +6,7 @@ import br.study.SpringStudy_3.Exception.ErrorMessages.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -64,6 +65,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BookHasLoansException.class)
     public ResponseEntity<CustomError> handleBookHasLoans(BookHasLoansException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
+        CustomError error = new CustomError(Instant.now(), status, e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<CustomError> handleAuthException(AuthenticationException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
         CustomError error = new CustomError(Instant.now(), status, e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(error);
     }

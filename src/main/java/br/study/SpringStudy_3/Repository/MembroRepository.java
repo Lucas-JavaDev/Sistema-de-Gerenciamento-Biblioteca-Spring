@@ -13,4 +13,7 @@ public interface MembroRepository extends JpaRepository<Membro, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT m FROM Membro m WHERE m.id = :id")
     Optional<Membro> findMembroById(Long id);
+
+
+    Optional<Membro> findMembroByEmail(String email);
 }
