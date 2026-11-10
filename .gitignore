@@ -19,6 +19,7 @@ ANNOTATION.md
 *.iws
 *.iml
 *.ipr
+*.http
 
 ### NetBeans ###
 /nbproject/private/

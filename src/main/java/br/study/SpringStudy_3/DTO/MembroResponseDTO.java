@@ -15,6 +15,7 @@ public class MembroResponseDTO {
     private String cpf;
     private String email;
 
+
     public MembroResponseDTO(Membro membro) {
         id = membro.getId();
         nome = membro.getNome();

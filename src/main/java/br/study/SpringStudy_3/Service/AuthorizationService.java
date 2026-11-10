@@ -6,19 +6,22 @@ import br.study.SpringStudy_3.Entity.Membro;
 
 import br.study.SpringStudy_3.Entity.Role;
 import br.study.SpringStudy_3.Repository.MembroRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class AuthorizationService implements UserDetailsService {
 
 
     private final MembroRepository membroRepository;
-    public AuthorizationService(MembroRepository membroRepository, PasswordEncoder passwordEncoder) {
+    public AuthorizationService(MembroRepository membroRepository) {
         this.membroRepository = membroRepository;
     }
 
@@ -30,11 +33,9 @@ public class AuthorizationService implements UserDetailsService {
                 () -> new UsernameNotFoundException("Membro  não encontrado")
         );
 
+        Set<Role> roles = membro.getRoles();
 
-        for(Role role : membro.getRoles()){
-            membro.getRoles().add(role);
-        }
-        return membro;
+        return new User(membro.getEmail(), membro.getPassword(), roles);
     }
 
 

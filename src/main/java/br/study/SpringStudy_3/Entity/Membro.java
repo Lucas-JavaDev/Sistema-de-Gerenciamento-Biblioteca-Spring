@@ -46,6 +46,10 @@ public class Membro implements UserDetails {
     }
 
 
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
     @Override
     public String getUsername() {
         return email;

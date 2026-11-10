@@ -5,6 +5,7 @@ import br.study.SpringStudy_3.DTO.LivroDTO;
 import br.study.SpringStudy_3.Service.AutorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -32,6 +33,7 @@ public class AutorController {
         return ResponseEntity.ok(autorService.findById(id));
     }
 
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<AutorDTO> createAuthor(@Valid @RequestBody AutorDTO autorCreateDTO){
         AutorDTO dto = autorService.create(autorCreateDTO);
@@ -42,11 +44,13 @@ public class AutorController {
         return ResponseEntity.created(uri).body(dto);
     }
 
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @PutMapping(value = "{id}")
     public ResponseEntity<AutorDTO> updateAuthor(@Valid @RequestBody AutorDTO autorCreateDTO, @PathVariable Long id){
         return ResponseEntity.ok(autorService.update(autorCreateDTO, id));
     }
 
+    @PreAuthorize(value = "hasRole('ADMIN')")
     @DeleteMapping(value = "{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         autorService.delete(id);

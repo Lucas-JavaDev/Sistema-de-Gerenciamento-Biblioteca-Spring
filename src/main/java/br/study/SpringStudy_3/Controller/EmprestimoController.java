@@ -44,7 +44,6 @@ public class EmprestimoController {
         return ResponseEntity.ok(emprestimoService.findById(empId));
     }
 
-
     @GetMapping("/membro/{id}")
     public ResponseEntity<EmpRequestDTO> showById(@PathVariable Long id) {
         return ResponseEntity.ok(emprestimoService.getMemberLoans(id));
